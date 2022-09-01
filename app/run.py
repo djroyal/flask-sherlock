@@ -33,3 +33,16 @@ def read_data(source):
         errors = [f"Reading {source}, {str(e)}"]
 
     return data, errors
+@app.route("/api/v1/movies/recommend", methods=["GET"])
+def recommend():
+    """
+    Function loads movies from db and returns recommendations.
+    """
+    MOVIES, errors = read_data(f"{APP_DIR}/db.json")
+    if errors:
+        return jsonify({"errors": errors, "status_code": 500}), 500
+
+    sherlock = Sherlock(MOVIES, request.args)
+    recommendation = sherlock.recommend()
+
+    return jsonify(recommendation)
